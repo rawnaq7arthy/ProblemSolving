@@ -1,0 +1,12 @@
+read the input
+find the maximum value (tallest candle)
+count how many time this max value appears in the list
+return count
+_________________________________
+
+input          output
+4,4,1,3,4      3
+3,2,1,3        2
+1,2,3,4,5,5    2
+7              1
+
