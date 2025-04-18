@@ -1,7 +1,29 @@
-read the input
-find the maximum value (tallest candle)
-count how many time this max value appears in the list
-return count
+pseudocode 
+________________________________
+START
+
+SET candles = [4, 1, 4, 3]
+
+SET tallest = first candle
+
+FOR each candle in candles
+    IF candle > tallest
+        SET tallest = candle
+    ENDIF
+ENDFOR
+
+SET count = 0
+
+FOR each candle in candles
+    IF candle == tallest
+        INCREASE count by 1
+    ENDIF
+ENDFOR
+
+PRINT tallest and count
+
+END
+
 _________________________________
 
 input          output
