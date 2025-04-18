@@ -1,0 +1,20 @@
+Algorithm
+  1.Start 
+  2.input number of white balls
+  3.input number of black balls
+  4.set row is = to 1
+  5.set height is = to 1 
+  6.condition:
+	•if row is odd and white >or = t row
+	•subtract row from white 
+	•set height = to row
+	•else if row is even and black >or  to row
+	•subtract row from black set height = row
+	•else
+	•stop the loop
+	•increase row by 1
+  7.output the height of triangle
+  8.end
+
+
+
