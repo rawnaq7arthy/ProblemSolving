@@ -1,0 +1,31 @@
+CREATE DATABASE CodeAcademyDB;
+USE CodeAcademyDB;
+
+CREATE TABLE Students(
+c INT AUTO_INCREMENT PRIMARY KEY,
+FirstName VARCHAR(50) NOT NULL,
+LastName VARCHAR(50) NOT NULL,
+Email VARCHAR(100) UNIQUE NOT NULL,
+EnrollmentDate DATE NOT NULL
+);
+
+DESC Students;
+
+CREATE TABLE Stu
+AS ( SELECT StudentID, Email FROM Students);
+
+SELECT * FROM Students;
+
+DROP TABLE Stu;
+
+TRUNCATE TABLE Students;
+
+RENAME TABLE Students TO StudentTable;
+
+ALTER TABLE StudentTable ADD (Age INT(3));
+
+DESC StudentTable;
+
+ALTER TABLE StudentTable MODIFY COLUMN FirstName VARCHAR(40);
+
+ALTER TABLE StudentTable MODIFY COLUMN LastName VARCHAR(70);

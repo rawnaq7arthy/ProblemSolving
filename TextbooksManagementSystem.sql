@@ -1,0 +1,281 @@
+CREATE DATABASE TextbooksManagementSystem;
+USE TextbooksManagementSystem;
+
+CREATE TABLE COLLEGE (
+    Cl_Code CHAR(3) PRIMARY KEY,
+    Cl_Name CHAR(40) NOT NULL,
+    Cl_Dean CHAR(30)
+);
+
+CREATE TABLE DEPARTMENT (
+    Dp_Code CHAR(4) PRIMARY KEY,
+    Dp_Name CHAR(40) NOT NULL,
+    Dp_HoD CHAR(30),
+    Dp_Col CHAR(3),
+    FOREIGN KEY (Dp_Col) REFERENCES COLLEGE(Cl_Code)
+);
+
+CREATE TABLE STUDENT (
+    St_ID NUMERIC(6) PRIMARY KEY CHECK (St_ID > 0),
+    St_Major CHAR(30),
+    St_Cohort NUMERIC(4) NOT NULL
+);
+
+CREATE TABLE EMPLOYEE (
+    Em_ID NUMERIC(6) PRIMARY KEY CHECK (Em_ID > 0),
+    Em_Office CHAR(4) NOT NULL,
+    Em_Ext NUMERIC(4) CHECK (Em_Ext > 1000)
+);
+
+CREATE TABLE BORROWER (
+    Br_ID NUMERIC(6) PRIMARY KEY CHECK (Br_ID > 0),
+    Br_Name CHAR(30) NOT NULL,
+    Br_Dept CHAR(4),
+    Br_Mobile CHAR(8) CHECK (Br_Mobile >= '90000000'),
+    Br_City CHAR(20),
+    Br_House CHAR(4),
+    Br_Type CHAR(1) CHECK (Br_Type IN ('S', 'E')),
+    FOREIGN KEY (Br_Dept) REFERENCES DEPARTMENT(Dp_Code)
+);
+
+CREATE TABLE COURSE (
+    Cr_Code CHAR(8) PRIMARY KEY,
+    Cr_Title CHAR(40) NOT NULL,
+    Cr_Ch NUMERIC(2) CHECK (Cr_Ch > 0),
+    Cr_ofSec NUMERIC(2) CHECK (Cr_ofSec > 0),
+    Cr_Dep CHAR(4),
+    FOREIGN KEY (Cr_Dep) REFERENCES DEPARTMENT(Dp_Code)
+);
+
+CREATE TABLE BOOK (
+    Bk_ID NUMERIC(6) PRIMARY KEY CHECK (Bk_ID > 0),
+    Bk_Title CHAR(50) NOT NULL,
+    Bk_Edition NUMERIC(2),
+    Bk_ofPages NUMERIC(4) CHECK (Bk_ofPages > 0),
+    Bk_TotalCopies NUMERIC(5),
+    Bk_RemCopies NUMERIC(5)
+);
+
+CREATE TABLE BOOKTOPIC (
+    Tp_BkID NUMERIC(6),
+    Tp_Desc CHAR(30) NOT NULL,
+    FOREIGN KEY (Tp_BkID) REFERENCES BOOK(Bk_ID)
+);
+
+CREATE TABLE LINK (
+    Li_CrCode CHAR(8),
+    Li_BkID NUMERIC(6),
+    Li_usage CHAR(1) CHECK (Li_usage IN ('T', 'R')),
+    FOREIGN KEY (Li_CrCode) REFERENCES COURSE(Cr_Code),
+    FOREIGN KEY (Li_BkID) REFERENCES BOOK(Bk_ID)
+);
+
+CREATE TABLE REGISTRATION (
+    Re_BrID NUMERIC(6),
+    Re_CrCode CHAR(8),
+    Re_Semester CHAR(6) NOT NULL,
+    FOREIGN KEY (Re_BrID) REFERENCES BORROWER(Br_ID),
+    FOREIGN KEY (Re_CrCode) REFERENCES COURSE(Cr_Code)
+);
+
+CREATE TABLE ISSUING (
+    is_BrID NUMERIC(6),
+    is_BkID NUMERIC(6),
+    is_DateTaken DATE NOT NULL,
+    is_DateReturn DATE,
+    FOREIGN KEY (is_BrID) REFERENCES BORROWER(Br_ID),
+    FOREIGN KEY (is_BkID) REFERENCES BOOK(Bk_ID),
+    CHECK (is_DateReturn IS NULL OR is_DateReturn > is_DateTaken)
+);
+
+-- INSERT VALUES INTO TABLES 
+
+INSERT INTO COLLEGE VALUES
+('ENG', 'College of Engineering', 'Dr. Salim Al-Farsi'),
+('SCI', 'College of Science', 'Dr. Aisha Al-Mamari');
+
+INSERT INTO DEPARTMENT VALUES
+('CSE', 'Computer Science and Engineering', 'Dr. Hamed Al-Kindi', 'ENG'),
+('BIO', 'Biology Department', 'Dr. Amal Al-Hinai', 'SCI');
+
+INSERT INTO STUDENT VALUES
+(100001, 'Computer Science', 2020),
+(100002, 'Biology', 2021);
+
+INSERT INTO EMPLOYEE VALUES
+(200001, 'E101', 1200),
+(200002, 'S204', 1500);
+
+INSERT INTO BORROWER VALUES
+(300001, 'Fatma Al-Maskari', 'CSE', '91234567', 'Muscat', 'B12', 'S'),
+(300002, 'Khalid Al-Rawahi', 'BIO', '92345678', 'Sohar', 'A7', 'E');
+
+INSERT INTO COURSE VALUES
+('CSE101', 'Intro to Programming', 3, 2, 'CSE'),
+('BIO201', 'Molecular Biology', 4, 1, 'BIO');
+
+INSERT INTO BOOK VALUES
+(400001, 'Programming in C++', 2, 450, 10, 7),
+(400002, 'Genetics and You', 1, 380, 8, 5);
+
+INSERT INTO BOOKTOPIC VALUES
+(400001, 'Object Oriented Programming'),
+(400002, 'DNA and Genes');
+
+INSERT INTO LINK VALUES
+('CSE101', 400001, 'T'),
+('BIO201', 400002, 'R');
+
+INSERT INTO REGISTRATION VALUES
+(300001, 'CSE101', '2023FA'),
+(300002, 'BIO201', '2023FA');
+
+INSERT INTO ISSUING VALUES
+(300001, 400001, DATE '2025-05-01', DATE '2025-05-15'),
+(300002, 400002, DATE '2025-05-05', DATE '2025-05-18');
+
+INSERT INTO STUDENT (St_ID, St_Major, St_Cohort)
+VALUES (100003, 'Information Security', 2022);
+
+-- INSERT DATA FROM EXISTING TABLE 
+CREATE TABLE STUDENT_BACKUP (
+    St_ID NUMERIC(6) PRIMARY KEY,
+    St_Major CHAR(30)
+);
+
+INSERT INTO STUDENT_BACKUP (St_ID, St_Major)
+SELECT St_ID, St_Major
+FROM STUDENT;
+
+
+-- UPDATE ROWS 
+
+UPDATE STUDENT
+SET St_Major = 'Data Science'
+WHERE St_ID = 100001;
+
+UPDATE BORROWER
+SET Br_Mobile = '99887766'
+WHERE Br_ID = 300001;
+
+UPDATE BOOK
+SET BK_Title = 'How To Code'
+WHERE BK_ID = 400002;
+
+-- DECLARE AND ASSIGN VALUES 
+SET @student_major := 'Biology';
+
+SELECT * FROM STUDENT
+WHERE St_Major = @student_major;
+
+-- UPDATE USING ARTHIMETIC OPERATIONS 
+UPDATE EMPLOYEE 
+SET Em_Ext = Em_Ext + 500 
+WHERE Em_ID = 200002;
+
+-- UPDATE USING SUBQUERY 
+UPDATE STUDENT
+SET St_ID = (
+    SELECT Tp_BkID
+    FROM BOOKTOPIC
+    WHERE Tp_Desc = 'Object Oriented Programming'
+)
+WHERE St_ID = 100002;
+
+
+
+-- UDPDATE MULTIPLE COLUMNS 
+UPDATE BORROWER
+SET Br_Mobile = 99999999,
+Br_Dept = 'SE'
+WHERE Br_ID = 300003;
+
+-- Deleting Rows
+DELETE FROM STUDENT_BACKUP;
+
+-- DELETE SPECIFIC ROW 
+DELETE FROM STUDENT_BACKUP
+WHERE St_ID = 100001;
+
+-- SELECT * 
+SELECT * FROM STUDENT;
+SELECT * FROM BOOK;
+
+-- USING ALIAS 
+SELECT BK_Title AS 'BOOK TITLE', Bk_ofPages FROM BOOK;
+
+-- SELECT USING ARTHIMETIC OPERATIONS AND AS
+SELECT Cr_Title, Cr_Ch * 2 + 1 From Course;
+
+-- SELECT USING ARTHIMETIC OPERATIONS AND AS
+SELECT Cr_Title, Cr_Ch * 2 + 1 AS TOTAL From Course;
+
+-- Displaying Distinct Rows
+SELECT DISTINCT Li_BkID FROM Link;
+SELECT DISTINCT Li_BkID, Li_CrCode FROM Link;
+
+
+-- Select specific number of rows
+SELECT * FROM STUDENT LIMIT 3;
+SELECT  Bk_Title, Bk_TotalCopies FROM BOOK LIMIT 1;
+
+-- Comparing Values
+SELECT * FROM COLLEGE WHERE Cl_Code != 'ENG';
+
+-- ANY OPERATER 
+SELECT * FROM EMPLOYEE
+WHERE Em_Ext > ANY (SELECT Em_Ext FROM
+EMPLOYEE WHERE Em_Ext BETWEEN 1000 AND 1500);
+
+-- ALL OPERATER 
+SELECT * FROM EMPLOYEE
+WHERE Em_Ext > ALL (SELECT Em_Ext FROM
+EMPLOYEE WHERE Em_Ext BETWEEN 3000 AND 4000);
+
+-- Like examples
+SELECT * FROM BORROWER WHERE Br_Name LIKE '_a%';
+SELECT * FROM BORROWER WHERE Br_Name LIKE '__a%';
+
+-- Using the IN Operator
+SELECT * FROM BORROWER
+WHERE Br_ID IN (300001, 300004 , 300006);
+
+-- Using the BETWEEN Operator
+SELECT * FROM BORROWER
+WHERE Br_ID BETWEEN 300002 AND 3000010;
+
+-- Sorting Rows Using the ORDER BY Clause
+SELECT * FROM BORROWER
+ORDER BY Br_Name ASC, Br_Dept DESC;
+
+-- Performing SELECT Statements That Use Two or more Tables
+SELECT b.Br_Name, b.Br_Dept
+FROM ISSUING i, BORROWER b
+WHERE i.is_BrID = b.Br_ID
+ORDER BY b.Br_Name;
+
+-- Concatenation 
+SELECT CONCAT (Bk_Title , Bk_Edition) AS BOOKTILTLE FROM BOOK;
+SELECT CONCAT (Br_Name , Br_Dept) AS NAMEDEPT FROM BORROWER;
+
+-- GroupBy / OrderBy / Having 
+
+SELECT St_Cohort, COUNT(*) AS total_students
+FROM STUDENT
+GROUP BY St_Cohort
+HAVING COUNT(*) > 1
+ORDER BY total_students DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
